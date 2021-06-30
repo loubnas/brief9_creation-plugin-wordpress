@@ -68,13 +68,13 @@
   </thead>
   <tbody>
     <?php
-        $connection = mysqli_connect('localhost','root','');
-        mysqli_select_db($connection,"plugin");
-        $query = "SELECT * FROM contactus order by id desc";
-        $result = mysqli_query($connection, $query);
-            while ($row = $result->fetch_assoc()) {
-                echo '<tr ><td>'. $row["fullname"] . '</td><td>' . $row["email"] . '</td><td>' . $row["subjecte"] . '</td><td>' . $row["content"] . '</td><td><button class= "btn btn-sm btn-dark" onclick="affiche(`'.$row["email"].'`)"> Response </button></td></tr>';
-            }
+         global $wpdb;
+         $table=$wpdb->prefix.'ContactUs';
+         $result = $wpdb->get_results("SELECT * FROM $table order by id desc",object);
+         foreach($result as $row){
+            echo '<tr ><td>'. $row->fullname . '</td><td>' . $row->email. '</td><td>' . $row->subjecte . '</td><td>' . $row->content . '</td><td><button class= "btn btn-sm btn-dark" onclick="affiche(`'.$row->email.'`)"> Response </button> <a href="./admin.php?page=contact-dashbord&id='.$row->id.'" class="btn btn-sm btn-danger">DELETE</a></td></tr>';
+       }
+         
             ?>
   </tbody>
 </table>
@@ -101,6 +101,14 @@
     $subject='message';
     $msg=$_POST['message'];
     wp_mail($to,$subject,$msg);
+    }
+
+    if(isset($_GET['id']) && !empty($_GET['id'])){           
+        global $wpdb;
+        $table=$wpdb->prefix.'ContactUs';
+        $wpdb->query("DELETE FROM $table WHERE id=".$_GET['id']);
+        $urlc=admin_url("admin.php?page=contact-dashbord");
+        wp_redirect($urlc);          
     }
     ?>
 

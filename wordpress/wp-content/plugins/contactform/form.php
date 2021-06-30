@@ -25,16 +25,14 @@ if(isset($_POST['save'])){
 
 function insert_data(){
 
-  $connection = mysqli_connect('localhost','root','');
-  mysqli_select_db($connection,"plugin");
-
+  global $wpdb;
     $fullName=$_POST['fullname'];
     $email=$_POST['email'];
     $subject=$_POST['subject'];
     $content=$_POST['content'];
 
 
-    if( empty($fullName) || empty($email) ||  empty($subject) || empty($content))
+    if( empty($fullName) || empty($email) || empty($subject) || empty($content))
     {
      echo '<h1 style="color:red;">All fields are required</h1>';
 
@@ -42,10 +40,18 @@ function insert_data(){
     else
     {
        
-     $query="INSERT INTO ContactUs (fullname,email,subjecte,content)" . "VALUES ('$fullName','$email','$subject','$content')";
-     mysqli_query($connection,$query);
-
-    }
+        $table=$wpdb->prefix.'ContactUs';
+        $wpdb->insert(
+          $table,
+          array(
+              'fullname' => $fullName,
+              'email' => $email,
+              'subjecte' => $subject,
+              'content' => $content
+          )
+      ); 
+         wp_redirect($_SERVER['REQUEST_URI']);
+         exit();
+  }
 }
-
 ?>

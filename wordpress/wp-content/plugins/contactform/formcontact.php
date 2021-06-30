@@ -5,15 +5,23 @@
 */
 
 
+//supprimer les informationde headers
+
+function reaload_headers()
+{
+    ob_start();
+} 
+add_action('init', 'reaload_headers');
+
 //creation table contact avec l'activation du plugin :
 function create_table(){
 
-    $connection = mysqli_connect('localhost','root','');
-    mysqli_select_db($connection,"plugin");
+    // $connection = mysqli_connect('localhost','root','');
+    // mysqli_select_db($connection,"plugin");
   
-    $sql = "CREATE TABLE ContactUs(id int NOT NULL PRIMARY KEY AUTO_INCREMENT, fullname varchar(255) NOT NULL, email varchar(55) NOT NULL,subjecte varchar(55) NOT NULL, content varchar(255) NOT NULL)";
-    $result = mysqli_query($connection, $sql);
-    return $result;
+    global $wpdb;
+  $table=$wpdb->prefix.'ContactUs';
+  $wpdb->query( "CREATE TABLE IF NOT EXISTS $table(id int NOT NULL PRIMARY KEY AUTO_INCREMENT, fullname varchar(255) NOT NULL, email varchar(55) NOT NULL,subjecte varchar(55) NOT NULL, content varchar(255) NOT NULL)");
   
   }
   register_activation_hook(__FILE__,'create_table');
@@ -24,12 +32,9 @@ function create_table(){
 
 function Drop_table(){
 
-    $connection = mysqli_connect('localhost','root','');
-    mysqli_select_db($connection,"plugin");
-  
-    $sql = "DROP TABLE `contactus`";
-    $result = mysqli_query($connection, $sql);
-    return $result;
+  global $wpdb;
+  $table=$wpdb->prefix.'ContactUs';
+  $wpdb->query( "DROP TABLE if exists $table");  
   
   }
   register_uninstall_hook( __FILE__,'Drop_table');
